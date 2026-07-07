@@ -271,3 +271,63 @@ button:disabled {
     transform: translateX(250%);
   }
 }
+
+.doc-view {
+  max-width: 820px;
+  max-height: 80vh;
+  overflow-y: auto;
+}
+
+.doc-header {
+  border-bottom: 1px solid #262b33;
+  padding-bottom: 1rem;
+  margin-bottom: 1rem;
+}
+
+.doc-meta {
+  color: #6b7280;
+  font-size: 0.85rem;
+}
+
+.doc-section {
+  margin-bottom: 1.75rem;
+}
+
+.doc-section h3 {
+  color: #e6e6e6;
+  border-left: 3px solid #2f6feb;
+  padding-left: 0.6rem;
+  margin-bottom: 0.6rem;
+}
+
+.doc-section p {
+  line-height: 1.6;
+  color: #cfd3d8;
+}
+
+.doc-section code {
+  background: #0d0f13;
+  border: 1px solid #262b33;
+  border-radius: 4px;
+  padding: 0.1rem 0.35rem;
+  font-size: 0.85em;
+}
+
+.doc-steps {
+  line-height: 1.7;
+  color: #cfd3d8;
+  padding-left: 1.25rem;
+}
+
+.doc-security-list {
+  line-height: 1.7;
+  color: #cfd3d8;
+  padding-left: 1.25rem;
+}
+
+.doc-footer {
+  border-top: 1px solid #262b33;
+  padding-top: 1rem;
+  font-size: 0.85rem;
+  color: #8a8f98;
+}

@@ -1,9 +1,12 @@
 import { useState } from 'react'
 import WizardShell from './wizard/WizardShell'
 import AuditLogView from './components/AuditLogView'
+import DocumentationView from './components/DocumentationView'
+
+type View = 'wizard' | 'audit' | 'docs'
 
 function App(): React.JSX.Element {
-  const [view, setView] = useState<'wizard' | 'audit'>('wizard')
+  const [view, setView] = useState<View>('wizard')
 
   return (
     <main className="app-shell">
@@ -17,9 +20,14 @@ function App(): React.JSX.Element {
           <button type="button" onClick={() => setView('audit')}>
             Log de Auditoria
           </button>
+          <button type="button" onClick={() => setView('docs')}>
+            Documentação
+          </button>
         </div>
       </header>
-      {view === 'wizard' ? <WizardShell /> : <AuditLogView />}
+      {view === 'wizard' && <WizardShell />}
+      {view === 'audit' && <AuditLogView />}
+      {view === 'docs' && <DocumentationView />}
     </main>
   )
 }
