@@ -1,0 +1,273 @@
+:root {
+  color-scheme: dark;
+  font-family: system-ui, -apple-system, 'Segoe UI', sans-serif;
+}
+
+body {
+  margin: 0;
+  background: #111418;
+  color: #e6e6e6;
+}
+
+.app-shell {
+  padding: 2rem;
+}
+
+.wizard-steps-nav {
+  display: flex;
+  gap: 1.5rem;
+  list-style: none;
+  padding: 0;
+  margin: 1.5rem 0;
+  font-size: 0.9rem;
+  color: #6b7280;
+}
+
+.wizard-steps-nav .active {
+  color: #e6e6e6;
+  font-weight: 600;
+}
+
+.wizard-step {
+  background: #181c22;
+  border: 1px solid #262b33;
+  border-radius: 8px;
+  padding: 1.5rem;
+  max-width: 900px;
+}
+
+.root-path-row {
+  display: flex;
+  gap: 0.5rem;
+  margin: 1rem 0;
+}
+
+.root-path-row input {
+  flex: 1;
+  padding: 0.5rem;
+  background: #0d0f13;
+  border: 1px solid #262b33;
+  border-radius: 4px;
+  color: #e6e6e6;
+}
+
+.actions-row {
+  display: flex;
+  gap: 0.75rem;
+  margin-bottom: 1rem;
+}
+
+button {
+  padding: 0.5rem 1rem;
+  border-radius: 4px;
+  border: 1px solid #2f6feb;
+  background: #2f6feb;
+  color: white;
+  cursor: pointer;
+}
+
+button:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.validation-summary,
+.creation-summary {
+  font-size: 0.9rem;
+  color: #b6bcc4;
+}
+
+.creation-summary ul {
+  color: #e08080;
+}
+
+.file-row {
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+  border-bottom: 1px solid #20242b;
+  font-size: 0.85rem;
+  padding: 0 0.25rem;
+}
+
+.file-row .file-name {
+  flex: 1;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.file-row .file-size {
+  width: 70px;
+  color: #8a8f98;
+}
+
+.file-row select {
+  background: #0d0f13;
+  color: #e6e6e6;
+  border: 1px solid #262b33;
+  border-radius: 4px;
+  max-width: 220px;
+}
+
+.reason-badge {
+  font-size: 0.7rem;
+  color: #6b7280;
+  min-width: 90px;
+}
+
+.file-error {
+  color: #e08080;
+  flex: 1;
+}
+
+.path-warning {
+  color: #e0b357;
+  font-size: 0.7rem;
+}
+
+.rename-list {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+  max-height: 420px;
+  overflow-y: auto;
+  margin-bottom: 1rem;
+}
+
+.rename-row {
+  background: #0d0f13;
+  border: 1px solid #20242b;
+  border-radius: 6px;
+  padding: 0.6rem 0.8rem;
+}
+
+.rename-row-header {
+  font-size: 0.85rem;
+  color: #8a8f98;
+  margin-bottom: 0.4rem;
+}
+
+.rename-fields {
+  display: flex;
+  gap: 0.5rem;
+  margin-bottom: 0.4rem;
+}
+
+.rename-fields input {
+  flex: 1;
+  padding: 0.4rem;
+  background: #111418;
+  border: 1px solid #262b33;
+  border-radius: 4px;
+  color: #e6e6e6;
+  font-size: 0.85rem;
+}
+
+.diff-preview {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-size: 0.8rem;
+}
+
+.diff-original {
+  color: #8a8f98;
+  text-decoration: line-through;
+}
+
+.diff-arrow {
+  color: #6b7280;
+}
+
+.diff-new {
+  color: #7bd88f;
+  font-weight: 600;
+}
+
+.file-list-inline {
+  max-height: 240px;
+  overflow-y: auto;
+  font-size: 0.8rem;
+  margin: 0.75rem 0;
+}
+
+.migration-item-MIGRADO {
+  color: #7bd88f;
+}
+
+.migration-item-ERRO {
+  color: #e08080;
+}
+
+.wizard-context-bar {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 1.5rem;
+  background: #14171c;
+  border: 1px solid #20242b;
+  border-radius: 6px;
+  padding: 0.5rem 0.9rem;
+  margin-bottom: 1rem;
+  font-size: 0.8rem;
+  color: #b6bcc4;
+  max-width: 900px;
+}
+
+.wizard-context-bar strong {
+  color: #8a8f98;
+  font-weight: 600;
+  margin-right: 0.3rem;
+}
+
+.hint-text {
+  font-size: 0.85rem;
+  color: #6b93d6;
+  background: #14202f;
+  border: 1px solid #223350;
+  border-radius: 6px;
+  padding: 0.5rem 0.75rem;
+  margin: 0 0 1rem;
+}
+
+.progress-block {
+  margin: 0.75rem 0;
+}
+
+.progress-label {
+  display: flex;
+  justify-content: space-between;
+  font-size: 0.85rem;
+  color: #b6bcc4;
+  margin-bottom: 0.35rem;
+}
+
+.progress-track {
+  width: 100%;
+  height: 10px;
+  background: #0d0f13;
+  border: 1px solid #262b33;
+  border-radius: 999px;
+  overflow: hidden;
+}
+
+.progress-fill {
+  height: 100%;
+  background: #2f6feb;
+  border-radius: 999px;
+  transition: width 0.2s ease;
+}
+
+.progress-fill-indeterminate {
+  width: 40%;
+  animation: progress-indeterminate 1.2s ease-in-out infinite;
+}
+
+@keyframes progress-indeterminate {
+  0% {
+    transform: translateX(-100%);
+  }
+  100% {
+    transform: translateX(250%);
+  }
+}
