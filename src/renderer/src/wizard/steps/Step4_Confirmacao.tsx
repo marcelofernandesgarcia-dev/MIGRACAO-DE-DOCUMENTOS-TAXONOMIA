@@ -67,7 +67,9 @@ function Step4_Confirmacao(): React.JSX.Element {
             destCategoryCode: yearFolderByFileId.get(item.fileId) ?? item.suggestedCategory,
             sizeBytes: item.sizeBytes,
             sourceMtime: item.mtime,
-            hashSha256: item.sha256 ?? null
+            // o hash SHA256 e calculado durante a migracao (Passo 5), nao no escaneamento -
+            // evita ler o conteudo de arquivos grandes antes do usuario decidir migra-los
+            hashSha256: null
           }
         })
         const { batchId: newBatchId } = await window.api.migration.createBatch(

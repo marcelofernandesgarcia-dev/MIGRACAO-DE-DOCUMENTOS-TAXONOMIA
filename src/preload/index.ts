@@ -53,7 +53,9 @@ const api = {
         callback(payload as { scanId: string; skippedDirs: string[] })
       ipcRenderer.on('scan:done', listener)
       return () => ipcRenderer.removeListener('scan:done', listener)
-    }
+    },
+    checkCloudOnly: (sourcePath: string): Promise<{ cloudOnlyCount: number }> =>
+      ipcRenderer.invoke('scan:checkCloudOnly', { sourcePath })
   },
   classification: {
     override: (scanId: string, fileId: string, categoryPath: string): Promise<{ ok: boolean }> =>

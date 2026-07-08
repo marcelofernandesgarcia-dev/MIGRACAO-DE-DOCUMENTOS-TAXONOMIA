@@ -8,7 +8,6 @@ export type CopyTask = {
   sourcePath: string
   destPath: string
   backupPath: string
-  expectedHash: string
 }
 
 export type CopyItemResult = {
@@ -16,6 +15,7 @@ export type CopyItemResult = {
   status: 'MIGRADO' | 'ERRO'
   backupPath?: string
   errorMessage?: string
+  hashSha256?: string
 }
 
 type MigrateMessage = { type: 'migrate'; tasks: CopyTask[] }
@@ -47,6 +47,19 @@ function tryUnlink(filePath: string): void {
 }
 
 async function processTask(task: CopyTask): Promise<CopyItemResult> {
+  // Hash da origem calculado agora (sob demanda, so para arquivos efetivamente selecionados
+  // para migracao) e usado como "hash esperado" para a verificacao pos-movimentacao abaixo.
+  let expectedHash: string
+  try {
+    expectedHash = await hashFile(task.sourcePath)
+  } catch (hashError) {
+    return {
+      fileId: task.fileId,
+      status: 'ERRO',
+      errorMessage: `Falha ao calcular hash de origem: ${errorMessage(hashError)}`
+    }
+  }
+
   mkdirSync(dirname(task.backupPath), { recursive: true })
 
   try {
@@ -87,8 +100,13 @@ async function processTask(task: CopyTask): Promise<CopyItemResult> {
 
   try {
     const actualHash = await hashFile(task.destPath)
-    if (actualHash === task.expectedHash) {
-      return { fileId: task.fileId, status: 'MIGRADO', backupPath: task.backupPath }
+    if (actualHash === expectedHash) {
+      return {
+        fileId: task.fileId,
+        status: 'MIGRADO',
+        backupPath: task.backupPath,
+        hashSha256: actualHash
+      }
     }
 
     try {

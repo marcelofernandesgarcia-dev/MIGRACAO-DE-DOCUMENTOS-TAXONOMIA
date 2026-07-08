@@ -1,6 +1,5 @@
 import { parentPort } from 'node:worker_threads'
-import { createHash } from 'node:crypto'
-import { createReadStream, statSync } from 'node:fs'
+import { statSync } from 'node:fs'
 import { extname } from 'node:path'
 
 type ScanMessage = { type: 'scan'; filePaths: string[] }
@@ -12,33 +11,23 @@ export type RawFileMeta = {
   sizeBytes: number
   mtime: string
   extension: string
-  sha256: string
 }
 
 let cancelled = false
 
-function hashFile(filePath: string): Promise<string> {
-  return new Promise((resolve, reject) => {
-    const hash = createHash('sha256')
-    const stream = createReadStream(filePath)
-    stream.on('data', (chunk) => hash.update(chunk))
-    stream.on('end', () => resolve(hash.digest('hex')))
-    stream.on('error', reject)
-  })
-}
-
-async function processFiles(filePaths: string[]): Promise<void> {
+function processFiles(filePaths: string[]): void {
   for (const filePath of filePaths) {
     if (cancelled) break
     try {
+      // So metadados aqui (sem ler o conteudo do arquivo) - o hash SHA256 e calculado
+      // sob demanda na migracao (Passo 5), apenas para os arquivos efetivamente selecionados,
+      // para nao travar o escaneamento em pastas com muitos GB de arquivos grandes.
       const stats = statSync(filePath)
-      const sha256 = await hashFile(filePath)
       const result: RawFileMeta = {
         absolutePath: filePath,
         sizeBytes: stats.size,
         mtime: stats.mtime.toISOString(),
-        extension: extname(filePath).toLowerCase(),
-        sha256
+        extension: extname(filePath).toLowerCase()
       }
       parentPort?.postMessage({ type: 'item', result })
     } catch (error) {
@@ -55,7 +44,7 @@ async function processFiles(filePaths: string[]): Promise<void> {
 parentPort?.on('message', (message: InboundMessage) => {
   if (message.type === 'scan') {
     cancelled = false
-    void processFiles(message.filePaths)
+    processFiles(message.filePaths)
   } else if (message.type === 'cancel') {
     cancelled = true
   }

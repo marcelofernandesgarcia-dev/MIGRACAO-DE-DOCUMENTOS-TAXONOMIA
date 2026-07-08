@@ -39,6 +39,8 @@ function Step2_Selecao(): React.JSX.Element {
 
   const [collisions, setCollisions] = useState<CollisionCheckResult[]>([])
   const [isCheckingCollisions, setIsCheckingCollisions] = useState(false)
+  const [reviewingUncategorized, setReviewingUncategorized] = useState(false)
+  const [isCheckingCloudOnly, setIsCheckingCloudOnly] = useState(false)
   const currentScanIdRef = useRef<string | null>(null)
 
   useEffect(() => {
@@ -70,6 +72,22 @@ function Step2_Selecao(): React.JSX.Element {
 
   async function handleStartScan(): Promise<void> {
     if (!sourcePath) return
+    setIsCheckingCloudOnly(true)
+    let cloudOnlyCount: number
+    try {
+      const result = await window.api.scan.checkCloudOnly(sourcePath)
+      cloudOnlyCount = result.cloudOnlyCount
+    } finally {
+      setIsCheckingCloudOnly(false)
+    }
+    if (cloudOnlyCount > 0) {
+      const proceed = window.confirm(
+        `${cloudOnlyCount} arquivo(s) estão marcados como "somente nesta nuvem" no OneDrive. ` +
+          'Calcular o hash desses arquivos vai forçar o download deles agora, o que pode demorar ' +
+          'bastante dependendo do tamanho e da conexão. Deseja continuar mesmo assim?'
+      )
+      if (!proceed) return
+    }
     const { scanId: newScanId } = await window.api.scan.start(sourcePath)
     currentScanIdRef.current = newScanId
     startScanState(newScanId)
@@ -104,6 +122,18 @@ function Step2_Selecao(): React.JSX.Element {
   }
 
   const errorCount = scanItems.filter((i) => i.error).length
+  const selectedItems = scanItems.filter((i) => selectedFileIds.has(i.fileId) && !i.error)
+  const uncategorizedItems = selectedItems.filter((i) => !i.suggestedCategory)
+  const displayedItems = reviewingUncategorized ? uncategorizedItems : scanItems
+
+  function handleNext(): void {
+    if (!reviewingUncategorized && uncategorizedItems.length > 0) {
+      setReviewingUncategorized(true)
+      return
+    }
+    if (uncategorizedItems.length > 0) return
+    goToStep(2)
+  }
 
   return (
     <section className="wizard-step">
@@ -129,8 +159,16 @@ function Step2_Selecao(): React.JSX.Element {
       )}
 
       <div className="actions-row">
-        <button type="button" disabled={!sourcePath || isScanning} onClick={handleStartScan}>
-          {isScanning ? 'Escaneando...' : 'Escanear pasta'}
+        <button
+          type="button"
+          disabled={!sourcePath || isScanning || isCheckingCloudOnly}
+          onClick={handleStartScan}
+        >
+          {isCheckingCloudOnly
+            ? 'Verificando arquivos na nuvem...'
+            : isScanning
+              ? 'Escaneando...'
+              : 'Escanear pasta'}
         </button>
         {isScanning && (
           <button type="button" onClick={handleCancelScan}>
@@ -202,9 +240,29 @@ function Step2_Selecao(): React.JSX.Element {
         </div>
       )}
 
-      {scanItems.length > 0 && (
+      {!isScanning && !reviewingUncategorized && uncategorizedItems.length > 0 && (
+        <p className="hint-text">
+          {uncategorizedItems.length} de {selectedItems.length} arquivo(s) selecionado(s) não
+          receberam categoria automática. Clique em &quot;Próximo »&quot; para revisá-los um a um
+          antes de continuar.
+        </p>
+      )}
+
+      {reviewingUncategorized && (
+        <div className="creation-summary">
+          <p className="file-error">
+            Revisão obrigatória: atribua uma categoria a cada um dos {uncategorizedItems.length}{' '}
+            arquivo(s) abaixo (use o menu suspenso). Arquivos já categorizados não aparecem aqui.
+          </p>
+          <button type="button" onClick={() => setReviewingUncategorized(false)}>
+            Ver lista completa
+          </button>
+        </div>
+      )}
+
+      {displayedItems.length > 0 && (
         <VirtualizedFileList
-          items={scanItems}
+          items={displayedItems}
           selectedFileIds={selectedFileIds}
           categories={CATEGORY_TAXONOMY}
           onToggle={toggleSelected}
@@ -216,8 +274,12 @@ function Step2_Selecao(): React.JSX.Element {
         <button type="button" onClick={() => goToStep(0)}>
           « Voltar
         </button>
-        <button type="button" disabled={selectedFileIds.size === 0} onClick={() => goToStep(2)}>
-          Próximo »
+        <button
+          type="button"
+          disabled={selectedFileIds.size === 0 || (reviewingUncategorized && uncategorizedItems.length > 0)}
+          onClick={handleNext}
+        >
+          {reviewingUncategorized ? 'Concluir revisão »' : 'Próximo »'}
         </button>
       </div>
     </section>

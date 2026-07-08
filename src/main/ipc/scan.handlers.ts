@@ -6,6 +6,7 @@ import {
   overrideClassification,
   checkCollisions
 } from '../services/scanService'
+import { countCloudOnlyFiles } from '../services/oneDriveService'
 
 export function registerScanHandlers(): void {
   ipcMain.handle('scan:start', (event, { sourcePath }: { sourcePath: string }) => {
@@ -41,5 +42,9 @@ export function registerScanHandlers(): void {
 
   ipcMain.handle('collision:check', (_event, { destPaths }: { destPaths: string[] }) => {
     return { collisions: checkCollisions(destPaths) }
+  })
+
+  ipcMain.handle('scan:checkCloudOnly', (_event, { sourcePath }: { sourcePath: string }) => {
+    return { cloudOnlyCount: countCloudOnlyFiles(sourcePath) }
   })
 }

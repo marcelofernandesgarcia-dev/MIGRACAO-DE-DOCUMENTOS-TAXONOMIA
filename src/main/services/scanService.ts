@@ -97,7 +97,6 @@ export function startScan(
           sizeBytes: raw.sizeBytes,
           mtime: raw.mtime,
           extension: raw.extension,
-          sha256: raw.sha256,
           suggestedCategory: category,
           suggestionReason: reason,
           ageDays,

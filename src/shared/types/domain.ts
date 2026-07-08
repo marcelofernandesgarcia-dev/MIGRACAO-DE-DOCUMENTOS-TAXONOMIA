@@ -19,7 +19,6 @@ export type FileScanResult = {
   sizeBytes: number
   mtime: string
   extension: string
-  sha256?: string
   suggestedCategory: string
   suggestionReason: SuggestionReason
   ageDays: number

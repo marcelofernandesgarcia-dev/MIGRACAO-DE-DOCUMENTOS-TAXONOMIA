@@ -41,9 +41,12 @@ function DocumentationView(): React.JSX.Element {
           </li>
           <li>
             <strong>Seleção:</strong> o sistema escaneia a pasta de origem em segundo plano (worker
-            threads), calcula o hash SHA256 de cada arquivo e sugere automaticamente uma categoria
-            de destino (por extensão, palavra-chave ou tempo de inatividade). O usuário revisa e
-            marca o que deseja migrar.
+            threads) e sugere automaticamente uma categoria de destino para cada arquivo (por
+            extensão, palavra-chave ou tempo de inatividade). Se a pasta tiver arquivos que o
+            OneDrive ainda não baixou localmente, o sistema avisa antes de continuar. Arquivos sem
+            categoria automática passam por uma revisão obrigatória antes do próximo passo. O
+            cálculo do hash SHA256 fica para o Passo 5, aplicado só aos arquivos efetivamente
+            selecionados — isso evita ler o conteúdo de arquivos grandes antes de decidir migrá-los.
           </li>
           <li>
             <strong>Renomeação:</strong> o sistema pré-preenche Ano, Tipo e Tema automaticamente a
@@ -166,7 +169,16 @@ function DocumentationView(): React.JSX.Element {
         <h3>Histórico de atualizações deste documento</h3>
         <ul>
           <li>
-            <strong>{LAST_UPDATED}</strong> — versão inicial da documentação, cobrindo as 6 fases
+            <strong>{LAST_UPDATED}</strong> — ajustes de robustez após testes com pastas reais
+            grandes: o hash SHA256 passou a ser calculado no Passo 5 (só para arquivos
+            selecionados) em vez do Passo 2, para não travar o escaneamento em pastas com muitos
+            GB; adicionado aviso de arquivos "somente nesta nuvem" do OneDrive antes de escanear;
+            adicionada revisão obrigatória de arquivos sem categoria automática antes de avançar do
+            Passo 2; corrigido falso positivo na sugestão automática de Tipo (palavra-chave
+            correspondendo a substring dentro de outra palavra).
+          </li>
+          <li>
+            <strong>2026-07-07</strong> — versão inicial da documentação, cobrindo as 6 fases
             implementadas (estrutura, escaneamento, renomeação, migração, arquivo histórico e
             auditoria).
           </li>
