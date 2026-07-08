@@ -23,6 +23,26 @@ function fileName(absolutePath: string): string {
   return absolutePath.split(/[\\/]/).pop() ?? absolutePath
 }
 
+// O menu de categoria precisa oferecer tambem as subpastas (ex: "05_FINANCEIRO_E_ORCAMENTO/PLANILHAS"),
+// nao so as 8 categorias principais - varias sugestoes automaticas (extensao, palavra-chave) apontam
+// para uma subpasta especifica, e sem essa opcao o <select> nao encontrava correspondencia e caia
+// silenciosamente para "Sem categoria" mesmo com a categoria certa ja definida por baixo.
+function buildCategoryOptions(
+  categories: CategoryDefinition[]
+): Array<{ value: string; label: string }> {
+  const options: Array<{ value: string; label: string }> = []
+  for (const category of categories) {
+    options.push({ value: category.code, label: category.label })
+    for (const subfolder of category.subfolders) {
+      options.push({
+        value: `${category.code}/${subfolder}`,
+        label: `${category.label} — ${subfolder}`
+      })
+    }
+  }
+  return options
+}
+
 function VirtualizedFileList({
   items,
   selectedFileIds,
@@ -30,6 +50,8 @@ function VirtualizedFileList({
   onToggle,
   onOverrideCategory
 }: Props): React.JSX.Element {
+  const categoryOptions = buildCategoryOptions(categories)
+
   return (
     <FixedSizeList
       height={LIST_HEIGHT}
@@ -61,9 +83,9 @@ function VirtualizedFileList({
                   onChange={(e) => onOverrideCategory(item.fileId, e.target.value)}
                 >
                   <option value="">Sem categoria</option>
-                  {categories.map((category) => (
-                    <option key={category.code} value={category.code}>
-                      {category.label}
+                  {categoryOptions.map((option) => (
+                    <option key={option.value} value={option.value}>
+                      {option.label}
                     </option>
                   ))}
                 </select>
