@@ -74,15 +74,17 @@ export function markFileMigrated(
   db: Database.Database,
   fileId: string,
   osUser: string,
-  hashSha256: string
+  hashSha256: string,
+  backupPath: string
 ): void {
   db.prepare(
     `UPDATE files
      SET status = 'MIGRADO', executed_by_os_user = @osUser, hash_sha256 = @hashSha256,
+         backup_path = @backupPath,
          hash_verified_at = strftime('%Y-%m-%dT%H:%M:%fZ','now'),
          migrated_at = strftime('%Y-%m-%dT%H:%M:%fZ','now')
      WHERE id = @fileId`
-  ).run({ fileId, osUser, hashSha256 })
+  ).run({ fileId, osUser, hashSha256, backupPath })
 }
 
 export function markFileError(db: Database.Database, fileId: string, message: string): void {

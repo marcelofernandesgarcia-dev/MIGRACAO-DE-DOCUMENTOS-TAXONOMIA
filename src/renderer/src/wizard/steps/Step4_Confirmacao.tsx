@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import { useWizardStore } from '../../state/wizardStore'
 import DiffPreview from '../../components/DiffPreview'
 import ProgressBar from '../../components/ProgressBar'
@@ -33,6 +33,11 @@ function Step4_Confirmacao(): React.JSX.Element {
   const [isPreparing, setIsPreparing] = useState(false)
   const [confirmChecked, setConfirmChecked] = useState(false)
   const [isAuthorizing, setIsAuthorizing] = useState(false)
+  // guarda contra o duplo-disparo de efeitos do React StrictMode em desenvolvimento: como
+  // "prepare()" e assincrono, checar apenas o estado "batchId" (que so atualiza depois do
+  // await) nao impede as duas invocacoes de passarem da guarda e criarem dois lotes distintos.
+  // Uma ref e sincrona e compartilhada entre as duas invocacoes do mesmo efeito.
+  const batchCreationStartedRef = useRef(false)
 
   const selectedItems = scanItems.filter((item) => selectedFileIds.has(item.fileId) && !item.error)
 
@@ -41,7 +46,8 @@ function Step4_Confirmacao(): React.JSX.Element {
   }, [])
 
   useEffect(() => {
-    if (batchId) return
+    if (batchId || batchCreationStartedRef.current) return
+    batchCreationStartedRef.current = true
     async function prepare(): Promise<void> {
       setIsPreparing(true)
       try {

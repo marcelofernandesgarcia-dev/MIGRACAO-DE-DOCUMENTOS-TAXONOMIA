@@ -157,8 +157,10 @@ export async function runMigration(
     await pool.migrateFiles(tasks, (result) => {
       processedCount += 1
       if (result.status === 'MIGRADO') {
-        // o worker sempre inclui hashSha256 quando o status e MIGRADO (garantido em copy.worker.ts)
-        markFileMigrated(db, result.fileId, osUser, result.hashSha256 ?? '')
+        // o worker sempre inclui hashSha256 e backupPath quando o status e MIGRADO
+        // (garantido em copy.worker.ts) - backupPath precisa ser persistido para que
+        // cleanupBatchBackups() consiga localizar e apagar a copia de seguranca depois
+        markFileMigrated(db, result.fileId, osUser, result.hashSha256 ?? '', result.backupPath ?? '')
         insertAuditLog(db, {
           eventType: 'ARQUIVO_MIGRADO',
           batchId,
